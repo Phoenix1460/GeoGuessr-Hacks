@@ -1,0 +1,54 @@
+{
+   "action": {
+      "default_icon": {
+         "16": "icons/icon-16.png",
+         "32": "icons/icon-32.png",
+         "48": "icons/icon-48.png"
+      },
+      "default_title": "Open GeoGuessr Boost"
+   },
+   "background": {
+      "service_worker": "service-worker.js",
+      "type": "module"
+   },
+   "content_scripts": [ {
+      "all_frames": true,
+      "js": [ "content-script.js" ],
+      "match_about_blank": true,
+      "matches": [ "https://www.geoguessr.com/*", "https://openguessr.com/*", "https://www.openguessr.com/*", "https://geotastic.net/*", "https://www.geotastic.net/*", "https://worldguessr.com/*", "https://www.worldguessr.com/*", "https://freeguessr.com/*", "https://www.freeguessr.com/*" ],
+      "run_at": "document_start"
+   }, {
+      "all_frames": true,
+      "js": [ "page-probe.js" ],
+      "match_about_blank": true,
+      "matches": [ "https://www.geoguessr.com/*", "https://openguessr.com/*", "https://www.openguessr.com/*", "https://geotastic.net/*", "https://www.geotastic.net/*", "https://worldguessr.com/*", "https://www.worldguessr.com/*", "https://freeguessr.com/*", "https://www.freeguessr.com/*" ],
+      "run_at": "document_start",
+      "world": "MAIN"
+   } ],
+   "content_security_policy": {
+      "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://nominatim.openstreetmap.org https://geoboost.win; img-src 'self' data: https://tile.openstreetmap.org"
+   },
+   "default_locale": "en",
+   "description": "__MSG_extensionDescription__",
+   "host_permissions": [ "https://www.geoguessr.com/*", "https://openguessr.com/*", "https://www.openguessr.com/*", "https://geotastic.net/*", "https://www.geotastic.net/*", "https://worldguessr.com/*", "https://www.worldguessr.com/*", "https://freeguessr.com/*", "https://www.freeguessr.com/*", "https://nominatim.openstreetmap.org/*", "https://geoboost.win/*" ],
+   "icons": {
+      "128": "icons/icon-128.png",
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png"
+   },
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzmaZBurVzjraFqcAdlz2lqejFnJeOY72DjvyTxGq0hkoSVio9DkeBL4HFi0M90xzC+HyACnzlSKMDbAV9uoNkbMEaZhEQ78cYhHhisUFcLFpSP9mBQKNEdTbJEcxjImsIycVL2udBkQ5fUQMAOXU+54En3luKbg8o4TGu4iZpk4vo98DYDdHMIc/pbjkm0huH8/Xo5I6LKPkLI6YASdqVq9CdrXRfnA5eYLS5ZSUKFUTuy5XVYrltFTSXz7Esl3R7JmyEhFyfMLo7YUHsXy5DQMO620wHxLqUJlTbD0yxGx1Ak55C4CYJrnfwQgA3YVkhBUZxVCUJBpqJUWpgkHzKQIDAQAB",
+   "manifest_version": 3,
+   "minimum_chrome_version": "116",
+   "name": "__MSG_extensionName__",
+   "permissions": [ "alarms", "scripting", "sidePanel", "storage" ],
+   "side_panel": {
+      "default_path": "sidepanel.html"
+   },
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "1.0.11",
+   "web_accessible_resources": [ {
+      "matches": [ "https://www.geoguessr.com/*", "https://openguessr.com/*", "https://www.openguessr.com/*", "https://geotastic.net/*", "https://www.geotastic.net/*", "https://worldguessr.com/*", "https://www.worldguessr.com/*", "https://freeguessr.com/*", "https://www.freeguessr.com/*" ],
+      "resources": [ "page-probe.js" ]
+   } ]
+}

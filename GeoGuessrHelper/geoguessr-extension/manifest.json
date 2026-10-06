@@ -1,0 +1,28 @@
+{
+  "name": "GeoGuessr Location Helper",
+  "description": "Captures round locations and places pins on GeoGuessr and WorldGuessr maps.",
+  "version": "2.0.0",
+  "manifest_version": 3,
+  "action": { "default_popup": "popup.html" },
+  "background": { "service_worker": "background.js" },
+"content_scripts": [{
+    "matches": ["https://www.geoguessr.com/*", "https://geoguessr.com/*", "https://www.worldguessr.com/*", "https://worldguessr.com/*"],
+    "js": ["content.js"],
+    "run_at": "document_start"
+  }, {
+    "matches": ["https://www.geoguessr.com/*", "https://geoguessr.com/*", "https://www.worldguessr.com/*", "https://worldguessr.com/*"],
+    "js": ["page-probe.js"],
+    "run_at": "document_start",
+    "world": "MAIN"
+  }],
+  "web_accessible_resources": [{"resources": ["page-probe.js"], "matches": ["https://www.geoguessr.com/*", "https://geoguessr.com/*", "https://www.worldguessr.com/*", "https://worldguessr.com/*"]}],
+  "host_permissions": ["<all_urls>"],
+  "permissions": ["webRequest", "storage", "tabs", "contextMenus"],
+  "commands": {
+    "place-pin": {
+      "suggested_key": { "default": "Alt+Shift+G" },
+      "description": "Place the captured location pin"
+    }
+  },
+  "icons": { "128": "extension_icon.png" }
+}

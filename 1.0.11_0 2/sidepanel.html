@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GeoGuessr Boost</title>
+    <script src="theme-init.js"></script>
+    <link rel="stylesheet" href="sidepanel.css" />
+  </head>
+  <body class="booting">
+    <main class="app">
+      <header class="topbar">
+        <div class="brand">
+          <img class="brand-mark" src="icons/icon-32.png" alt="" />
+          <span class="brand-name">GeoGuessr Boost</span>
+        </div>
+        <div class="topbar-actions">
+          <button id="settingsButton" class="icon-button" type="button" aria-label="Settings" data-i18n-aria="settings">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"></path>
+              <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.6v-.2h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"></path>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <section class="action-card">
+        <div>
+          <span class="action-eyebrow">Round location assistant</span>
+          <h1 data-i18n="where">Where is this?</h1>
+          <p data-i18n="subtitle">Get a hint for the current view.</p>
+          <span id="usagePill" class="usage-pill"></span>
+        </div>
+        <button id="analyzeButton" class="analyze-button" type="button">
+          <span data-i18n="analyze">Identify location</span>
+          <kbd id="hotkeyBadge">G</kbd>
+        </button>
+      </section>
+
+      <section id="message" class="notice">
+        <strong data-i18n="frameTitle">Open a supported round</strong>
+        <span data-i18n="frameBody">
+          Start a supported geography-game round and keep the game tab active.
+        </span>
+        <span class="notice-action"></span>
+      </section>
+
+      <section id="loading" class="loading-card hidden">
+        <span class="spinner"></span>
+        <div>
+          <strong data-i18n="looking">Checking the view</strong>
+          <p data-i18n="wait">This usually takes a few seconds.</p>
+        </div>
+      </section>
+
+      <section id="result" class="result hidden">
+        <div class="result-heading">
+          <div>
+            <span class="result-label" data-i18n="guess">Round location</span>
+            <h2 id="bestGuess"></h2>
+          </div>
+          <span id="confidence" class="confidence"></span>
+        </div>
+
+        <p id="summary" class="summary hidden"></p>
+
+        <div class="map-panel">
+          <div id="guessMap" class="map-canvas" tabindex="0" aria-label="Suggested location map preview">
+            <div id="guessMapTiles" class="map-tiles"></div>
+            <span class="map-marker" aria-hidden="true"></span>
+            <div class="map-controls" aria-label="Map controls">
+              <button id="mapZoomIn" type="button" aria-label="Zoom in">+</button>
+              <button id="mapZoomOut" type="button" aria-label="Zoom out">−</button>
+              <a id="openMapLink" class="map-open-button" target="_blank" rel="noopener noreferrer" aria-label="Open location in OpenStreetMap">↗</a>
+            </div>
+            <span class="map-attribution">© OpenStreetMap</span>
+          </div>
+        </div>
+        <div class="share-panel">
+          <button id="shareGuessButton" class="share-button" type="button" data-i18n="shareGuess">Share this guess</button>
+          <p id="shareGuessMessage" class="promo-message hidden"></p>
+        </div>
+
+        <section id="localCluesSection" class="result-section hidden">
+          <h3 data-i18n="localClues">Local clues</h3>
+          <ul id="localClues"></ul>
+        </section>
+
+      </section>
+
+      <section class="pro-card">
+        <div>
+          <span class="pro-eyebrow" data-i18n="proEyebrow">GeoBoost Pro</span>
+          <h2 data-i18n="proCardTitle">Pro is ready</h2>
+          <p data-i18n="proCardBody">Every free guess includes all features. Pro removes the guess limit.</p>
+        </div>
+        <div class="pro-access-box inline">
+          <div id="mainRestoreDetected" class="restore-detected hidden">
+            <strong data-i18n="restoreDetectedTitle">Active Pro access found</strong>
+            <p data-i18n="restoreDetectedBody">Enter the email used for payment to restore Pro on this installation.</p>
+          </div>
+          <div class="plan-options" data-plan-group="main" role="group" aria-label="Pro plan">
+            <div class="plan-variant plan-variant-a">
+              <button class="plan-option monthly-plan recommended selected" type="button" data-plan="monthly" aria-pressed="true">
+                <span class="plan-badge" data-i18n="mostPopular">Most popular</span>
+                <span data-i18n="monthlyPlan">Monthly Unlimited</span>
+                <strong>$9.99/mo</strong>
+                <small data-i18n="monthlyPlanCaption">Cancel anytime</small>
+              </button>
+              <button class="plan-option annual-plan" type="button" data-plan="annual" aria-pressed="false">
+                <span class="plan-badge" data-i18n="save50">Save 50%</span>
+                <span data-i18n="annualPlan">Annual Unlimited</span>
+                <strong>$59.99/year</strong>
+                <small><span>$4.99/month</span> · <span data-i18n="annualPlanCaption">billed yearly</span></small>
+              </button>
+            </div>
+            <div class="plan-variant plan-variant-b">
+              <span class="plan-section-label" data-i18n="oneTimeAccess">One-time access</span>
+              <button class="plan-option weekly-plan featured selected" type="button" data-plan="weekly" aria-pressed="true">
+                <span class="plan-badge" data-i18n="selectedPlan">Selected</span>
+                <span data-i18n="weeklyPlan">7-day pass</span>
+                <strong>$5.99</strong>
+                <small data-i18n="weeklyPlanCaption">one-time payment · no renewal</small>
+              </button>
+              <button class="plan-option daily-plan" type="button" data-plan="daily" aria-pressed="false">
+                <span data-i18n="dailyPlan">24-hour pass</span>
+                <strong>$1.99</strong>
+                <small data-i18n="dailyPlanCaption">one-time payment · no renewal</small>
+              </button>
+              <span class="plan-section-label subscriptions-label" data-i18n="unlimitedSubscriptions">Unlimited subscriptions</span>
+              <button class="plan-option monthly-plan recommended" type="button" data-plan="monthly" aria-pressed="false">
+                <span class="plan-badge" data-i18n="mostPopular">Most popular</span>
+                <span data-i18n="monthlyPlan">Monthly Unlimited</span>
+                <strong>$9.99/mo</strong>
+                <small data-i18n="monthlyPlanCaption">Cancel anytime</small>
+              </button>
+              <button class="plan-option annual-plan" type="button" data-plan="annual" aria-pressed="false">
+                <span data-i18n="annualPlan">Annual Unlimited</span>
+                <strong>$59.99/year</strong>
+                <small><span>$4.99/month</span> · <span data-i18n="save50">Save 50%</span></small>
+              </button>
+            </div>
+          </div>
+          <label id="mainProEmailLabel" class="hidden" for="mainProEmailInput" data-i18n="paymentLabel">Email for Pro access</label>
+          <div class="pro-access-row">
+            <input id="mainProEmailInput" type="email" autocomplete="email" spellcheck="false" placeholder="you@example.com" />
+            <button id="mainGoPro" class="text-button bordered" type="button" data-i18n="goPro">Go Pro</button>
+          </div>
+          <button id="mainCryptoPaymentLink" class="crypto-payment-link" type="button" data-i18n="cryptoPaymentLink">Card payment not working? Request crypto payment</button>
+          <button id="mainCryptoRequestStatus" class="crypto-request-status hidden" type="button"></button>
+          <p id="mainProMessage" class="promo-message hidden"></p>
+          <div class="restore-actions">
+            <button id="mainRequestRestore" class="text-button" type="button" data-i18n="restorePro">Restore Pro</button>
+          </div>
+          <div id="mainRestoreCodeRow" class="pro-access-row restore-code-row hidden">
+            <input id="mainRestoreCodeInput" type="text" inputmode="numeric" autocomplete="one-time-code" spellcheck="false" maxlength="6" placeholder="000000" />
+            <button id="mainConfirmRestore" class="text-button bordered" type="button" data-i18n="confirmRestore">Confirm</button>
+          </div>
+          <button id="refreshProStatusMain" class="text-button" type="button" data-i18n="refreshPro">Refresh Pro status</button>
+        </div>
+      </section>
+
+      <section class="discord-card">
+        <div>
+          <span class="pro-eyebrow" data-i18n="discordEyebrow">Community</span>
+          <h2 data-i18n="discordCardTitle">Join the Discord</h2>
+          <p data-i18n="discordCardBody">Get updates, report bugs, and suggest what to build next.</p>
+        </div>
+        <a id="discordInviteLink" class="discord-button" href="https://discord.gg/QkhmJSqFFC" target="_blank" rel="noopener noreferrer" data-i18n="discordJoin">
+          Join Discord
+        </a>
+      </section>
+
+      <section id="affiliateCard" class="affiliate-card">
+        <span class="pro-eyebrow" data-i18n="affiliateEyebrow">Affiliate program</span>
+        <div id="affiliateCardLoading" class="affiliate-loading">
+          <span class="spinner"></span>
+          <span data-i18n="affiliateLoading">Loading affiliate status</span>
+        </div>
+        <div id="affiliateEnrollState" class="hidden">
+          <h2 data-i18n="affiliateEnrollTitle">Earn 25% with GeoBoost</h2>
+          <p data-i18n="affiliateEnrollBody">Earn 25% of every successful Pro payment from users who enter your invite code.</p>
+          <ul class="affiliate-examples">
+            <li class="experiment-variant-b" data-i18n="affiliateWeeklyExample">$5.99 payment → you earn $1.49</li>
+            <li data-i18n="affiliateMonthlyExample">$9.99 payment → you earn $2.49</li>
+            <li data-i18n="affiliateAnnualExample">$59.99 payment → you earn $14.99</li>
+            <li data-i18n="affiliateRenewalExample">Earn again on every successful renewal</li>
+          </ul>
+          <div class="affiliate-input-row">
+            <input id="affiliateEmailInput" type="email" autocomplete="email" spellcheck="false" placeholder="you@example.com" />
+            <button id="affiliateRequestCode" class="text-button bordered" type="button" data-i18n="affiliateGetCode">Get my invite code</button>
+          </div>
+        </div>
+        <div id="affiliateVerifyState" class="hidden">
+          <h2 data-i18n="affiliateVerifyTitle">Check your email</h2>
+          <p data-i18n="affiliateVerifyBody">Enter the 6-digit code to activate your affiliate account.</p>
+          <div class="affiliate-input-row">
+            <input id="affiliateVerificationInput" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" />
+            <button id="affiliateConfirmCode" class="text-button bordered" type="button" data-i18n="affiliateConfirm">Confirm</button>
+          </div>
+          <button id="affiliateResendCode" class="text-button" type="button" data-i18n="affiliateResend">Resend code</button>
+        </div>
+        <div id="affiliateShareState" class="hidden">
+          <h2 data-i18n="affiliateShareTitle">Earn 25% on every payment</h2>
+          <div class="affiliate-code-row">
+            <code id="affiliateCode"></code>
+            <button id="affiliateCopyCode" class="text-button bordered" type="button" data-i18n="affiliateCopy">Copy</button>
+          </div>
+          <p data-i18n="affiliateShareBody">Monthly: $2.49 · Annual: $14.99</p>
+          <div class="affiliate-actions">
+            <button id="affiliateShareGeoBoost" class="text-button bordered" type="button" data-i18n="affiliateShare">Share GeoBoost</button>
+            <button id="affiliateViewStats" class="text-button" type="button" data-i18n="affiliateViewStats">View stats</button>
+          </div>
+        </div>
+        <p id="affiliateCardMessage" class="promo-message hidden"></p>
+      </section>
+
+      <section id="settingsPanel" class="settings-panel hidden">
+        <div class="panel-heading">
+          <h2 data-i18n="settingsTitle">Settings</h2>
+          <button id="closeSettings" class="icon-button" type="button" aria-label="Close">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m6 6 12 12M18 6 6 18"></path>
+            </svg>
+          </button>
+        </div>
+
+        <label class="field-label" for="languageSelect" data-i18n="language">Language</label>
+        <select id="languageSelect" class="language-select">
+          <option value="en">English</option>
+          <option value="fr">Français</option>
+          <option value="de">Deutsch</option>
+          <option value="ru">Русский</option>
+          <option value="pl">Polski</option>
+          <option value="es">Español</option>
+          <option value="pt">Português</option>
+          <option value="nl">Nederlands</option>
+          <option value="sv">Svenska</option>
+        </select>
+
+        <div class="settings-group appearance-settings">
+          <label class="toggle-row">
+            <span>
+              <strong data-i18n="darkTheme">Dark theme</strong>
+              <small data-i18n="darkThemeHelp">Use a darker interface in the side panel.</small>
+            </span>
+            <input id="darkThemeToggle" type="checkbox" />
+          </label>
+        </div>
+
+        <label class="field-label" data-i18n="hotkey">Analysis key</label>
+        <button id="hotkeyRecorder" class="hotkey-recorder" type="button">
+          <span data-i18n="currentKey">Current key</span>
+          <kbd>G</kbd>
+        </button>
+        <p class="field-help" data-i18n="hotkeyHelp">Click the field, then press any single key.</p>
+
+        <div class="settings-group">
+          <label class="toggle-row">
+            <span>
+              <strong data-i18n="autoPlace">Auto Place</strong>
+              <small data-i18n="autoPlaceHelp">Automatically places the pin when coordinates are found.</small>
+            </span>
+            <input id="autoPlaceToggle" type="checkbox" />
+          </label>
+          <label class="toggle-row">
+            <span>
+              <strong data-i18n="autoGuess">Auto Guess</strong>
+              <small data-i18n="autoGuessHelp">Submits the guess 1–3 seconds after placing the pin.</small>
+            </span>
+            <input id="autoGuessToggle" type="checkbox" />
+          </label>
+          <label class="toggle-row">
+            <span>
+              <strong data-i18n="smartZoom">Smart Zoom</strong>
+              <small data-i18n="smartZoomHelp">Pans and zooms the guess map before the final placement.</small>
+            </span>
+            <input id="smartZoomToggle" type="checkbox" />
+          </label>
+          <label class="toggle-row">
+            <span>
+              <strong data-i18n="rangeMode">Range</strong>
+              <small data-i18n="rangeModeHelp">Optionally offsets placement within a score range.</small>
+            </span>
+            <input id="rangeToggle" type="checkbox" />
+          </label>
+          <div id="rangeControls" class="range-controls">
+            <label>
+              <span data-i18n="scoreMin">Min score</span>
+              <input id="scoreMinInput" type="number" min="0" max="5000" step="10" />
+            </label>
+            <label>
+              <span data-i18n="scoreMax">Max score</span>
+              <input id="scoreMaxInput" type="number" min="0" max="5000" step="10" />
+            </label>
+          </div>
+        </div>
+
+        <section id="affiliateDashboard" class="affiliate-dashboard">
+          <span class="pro-eyebrow" data-i18n="affiliateEyebrow">Affiliate program</span>
+          <h3 data-i18n="affiliateDashboardTitle">Affiliate earnings</h3>
+          <p id="affiliateDashboardStatus" class="affiliate-dashboard-status"></p>
+          <button id="affiliateDashboardEnroll" class="text-button bordered hidden" type="button" data-i18n="affiliateGetCode">Get my invite code</button>
+          <div id="affiliateStats" class="affiliate-stats hidden">
+            <div><small data-i18n="affiliateReferredUsers">Referred users</small><strong id="affiliateReferredUsers">0</strong></div>
+            <div><small data-i18n="affiliatePayingReferrals">Paying referrals</small><strong id="affiliatePayingReferrals">0</strong></div>
+            <div><small data-i18n="affiliatePending">Pending</small><strong id="affiliatePendingAmount">$0.00</strong></div>
+            <div><small data-i18n="affiliateAvailable">Available</small><strong id="affiliateAvailableAmount">$0.00</strong></div>
+            <div><small data-i18n="affiliateLifetimeEarned">Lifetime earned</small><strong id="affiliateLifetimeEarned">$0.00</strong></div>
+            <div><small data-i18n="affiliatePaid">Paid out</small><strong id="affiliatePaidAmount">$0.00</strong></div>
+          </div>
+          <div id="affiliateDashboardCodeRow" class="affiliate-code-row hidden">
+            <code id="affiliateDashboardCode"></code>
+            <button id="affiliateDashboardCopyCode" class="text-button bordered" type="button" data-i18n="affiliateCopy">Copy</button>
+            <button id="affiliateDashboardShare" class="text-button bordered" type="button" data-i18n="affiliateShare">Share</button>
+          </div>
+          <div id="affiliateCommissionExplanation" class="affiliate-commission-copy hidden">
+            <p data-i18n="affiliateCommissionExplanation">You earn 25% of every successful Pro payment made by your referrals.</p>
+            <p data-i18n="affiliateCommissionExamples">$9.99 → $2.49 · $59.99 → $14.99</p>
+            <p data-i18n="affiliateCommissionRenewals">Commissions repeat on successful subscription renewals. Refunds and chargebacks are deducted from your balance.</p>
+          </div>
+          <div id="affiliatePayoutSection" class="affiliate-payout hidden">
+            <h4 data-i18n="affiliatePayoutTitle">Crypto payout</h4>
+            <p id="affiliatePayoutMinimum"></p>
+            <button id="affiliateOpenPayout" class="text-button bordered" type="button" data-i18n="affiliateRequestPayout">Request payout</button>
+            <div id="affiliatePayoutForm" class="hidden">
+              <div class="affiliate-payout-grid">
+                <label>
+                  <span data-i18n="affiliateAsset">Asset</span>
+                  <select id="affiliatePayoutAsset"></select>
+                </label>
+                <label>
+                  <span data-i18n="affiliateNetwork">Network</span>
+                  <select id="affiliatePayoutNetwork"></select>
+                </label>
+              </div>
+              <label>
+                <span data-i18n="affiliateWallet">Wallet address</span>
+                <input id="affiliateWalletInput" type="text" autocomplete="off" spellcheck="false" />
+              </label>
+              <label class="affiliate-confirm-row">
+                <input id="affiliatePayoutConfirm" type="checkbox" />
+                <span data-i18n="affiliatePayoutConfirm">I checked the asset, network, and wallet address. Transfers cannot be reversed.</span>
+              </label>
+              <button id="affiliateRequestPayout" class="text-button bordered" type="button" data-i18n="affiliateSubmitPayout">Submit payout request</button>
+            </div>
+            <p id="affiliatePayoutMessage" class="promo-message hidden"></p>
+            <h4 class="affiliate-history-title" data-i18n="affiliatePayoutHistory">Payout history</h4>
+            <div id="affiliatePayoutHistory" class="affiliate-payout-history"></div>
+          </div>
+        </section>
+
+        <div id="billingSettings" class="billing-settings hidden">
+          <div>
+            <strong data-i18n="billingSettingsTitle">Pro subscription</strong>
+            <small data-i18n="billingSettingsHelp">Manage billing, switch plans, or cancel in Stripe</small>
+          </div>
+          <button id="manageSubscription" class="text-button bordered" type="button" data-i18n="manageSubscription">
+            Manage subscription
+          </button>
+          <p id="manageSubscriptionMessage" class="promo-message hidden"></p>
+        </div>
+
+        <button id="showOnboarding" class="text-button" type="button" data-i18n="showGuide">
+          Show the guide again
+        </button>
+      </section>
+    </main>
+
+    <div id="onboarding" class="onboarding hidden" role="dialog" aria-modal="true">
+      <section class="onboarding-card">
+        <div class="onboarding-progress">
+          <span class="active"></span><span></span>
+        </div>
+
+        <div class="onboarding-step" data-step="0">
+          <span class="onboarding-icon">1</span>
+          <h2 data-i18n="guide1Title">Open a round</h2>
+          <p data-i18n="guide1Body">Start a supported geography-game round and keep the game tab active.</p>
+        </div>
+        <div class="onboarding-step hidden" data-step="1">
+          <span class="onboarding-icon">2</span>
+          <h2 id="guide3Title"></h2>
+          <p data-i18n="guide3Body">GeoBoost shows the found place in the side panel. Every free guess includes all features. Range and Auto Guess start off so your first placement is exact.</p>
+          <div class="onboarding-invite">
+            <label for="onboardingInviteCode" data-i18n="onboardingInviteLabel">Have an invite code? Optional</label>
+            <div class="affiliate-input-row">
+              <input id="onboardingInviteCode" type="text" autocomplete="off" spellcheck="false" maxlength="24" />
+              <button id="onboardingApplyInvite" class="text-button bordered" type="button" data-i18n="onboardingInviteApply">Apply</button>
+            </div>
+            <p id="onboardingInviteMessage" class="promo-message hidden"></p>
+          </div>
+          <label class="consent-row">
+            <input id="privacyConsent" type="checkbox" />
+            <span>
+              <span data-i18n="consentBody">I agree to the</span>
+              <a id="privacyPolicyLink" class="privacy-link" href="#" target="_blank" data-i18n="privacyPolicy">Privacy Policy</a>
+            </span>
+          </label>
+        </div>
+
+        <div class="onboarding-actions">
+          <button id="nextOnboarding" class="analyze-button compact" type="button">Next</button>
+        </div>
+      </section>
+    </div>
+
+    <div id="subscriptionPrompt" class="onboarding hidden" role="dialog" aria-modal="true">
+      <section class="onboarding-card subscription-card">
+        <span class="onboarding-icon">5</span>
+        <h2 data-i18n="limitTitle">Free guesses used</h2>
+        <p id="limitBodyText" data-i18n="limitBody">Your free guesses are used for today. Come back tomorrow or choose Pro for unlimited guesses.</p>
+        <div class="pro-access-box">
+          <div id="promptRestoreDetected" class="restore-detected hidden">
+            <strong data-i18n="restoreDetectedTitle">Active Pro access found</strong>
+            <p data-i18n="restoreDetectedBody">Enter the email used for payment to restore Pro on this installation.</p>
+          </div>
+          <label id="promptProEmailLabel" for="proEmailInput" data-i18n="paymentLabel">Email for Pro access</label>
+          <div class="plan-options" data-plan-group="prompt" role="group" aria-label="Pro plan">
+            <div class="plan-variant plan-variant-a">
+              <button class="plan-option monthly-plan recommended selected" type="button" data-plan="monthly" aria-pressed="true">
+                <span class="plan-badge" data-i18n="mostPopular">Most popular</span>
+                <span data-i18n="monthlyPlan">Monthly Unlimited</span>
+                <strong>$9.99/mo</strong>
+                <small data-i18n="monthlyPlanCaption">Cancel anytime</small>
+              </button>
+              <button class="plan-option annual-plan" type="button" data-plan="annual" aria-pressed="false">
+                <span class="plan-badge" data-i18n="save50">Save 50%</span>
+                <span data-i18n="annualPlan">Annual Unlimited</span>
+                <strong>$59.99/year</strong>
+                <small><span>$4.99/month</span> · <span data-i18n="annualPlanCaption">billed yearly</span></small>
+              </button>
+            </div>
+            <div class="plan-variant plan-variant-b">
+              <span class="plan-section-label" data-i18n="oneTimeAccess">One-time access</span>
+              <button class="plan-option weekly-plan featured selected" type="button" data-plan="weekly" aria-pressed="true">
+                <span class="plan-badge" data-i18n="selectedPlan">Selected</span>
+                <span data-i18n="weeklyPlan">7-day pass</span>
+                <strong>$5.99</strong>
+                <small data-i18n="weeklyPlanCaption">one-time payment · no renewal</small>
+              </button>
+              <button class="plan-option daily-plan" type="button" data-plan="daily" aria-pressed="false">
+                <span data-i18n="dailyPlan">24-hour pass</span>
+                <strong>$1.99</strong>
+                <small data-i18n="dailyPlanCaption">one-time payment · no renewal</small>
+              </button>
+              <span class="plan-section-label subscriptions-label" data-i18n="unlimitedSubscriptions">Unlimited subscriptions</span>
+              <button class="plan-option monthly-plan recommended" type="button" data-plan="monthly" aria-pressed="false">
+                <span class="plan-badge" data-i18n="mostPopular">Most popular</span>
+                <span data-i18n="monthlyPlan">Monthly Unlimited</span>
+                <strong>$9.99/mo</strong>
+                <small data-i18n="monthlyPlanCaption">Cancel anytime</small>
+              </button>
+              <button class="plan-option annual-plan" type="button" data-plan="annual" aria-pressed="false">
+                <span data-i18n="annualPlan">Annual Unlimited</span>
+                <strong>$59.99/year</strong>
+                <small><span>$4.99/month</span> · <span data-i18n="save50">Save 50%</span></small>
+              </button>
+            </div>
+          </div>
+          <div class="pro-access-row">
+            <input id="proEmailInput" type="email" autocomplete="email" spellcheck="false" placeholder="you@example.com" />
+            <button id="startProCheckout" class="text-button bordered" type="button" data-i18n="goPro">Go Pro</button>
+          </div>
+          <button id="promptCryptoPaymentLink" class="crypto-payment-link" type="button" data-i18n="cryptoPaymentLink">Card payment not working? Request crypto payment</button>
+          <button id="promptCryptoRequestStatus" class="crypto-request-status hidden" type="button"></button>
+          <p id="proMessage" class="promo-message hidden"></p>
+          <div class="restore-actions">
+            <button id="requestRestore" class="text-button" type="button" data-i18n="restorePro">Restore Pro</button>
+          </div>
+          <div id="restoreCodeRow" class="pro-access-row restore-code-row hidden">
+            <input id="restoreCodeInput" type="text" inputmode="numeric" autocomplete="one-time-code" spellcheck="false" maxlength="6" placeholder="000000" />
+            <button id="confirmRestore" class="text-button bordered" type="button" data-i18n="confirmRestore">Confirm</button>
+          </div>
+          <button id="refreshProStatus" class="text-button" type="button" data-i18n="refreshPro">Refresh Pro status</button>
+        </div>
+        <div class="promo-box hidden" aria-hidden="true">
+          <label for="promoCodeInput" data-i18n="promoLabel">Promo code</label>
+          <div class="promo-row">
+            <input id="promoCodeInput" type="text" autocomplete="off" spellcheck="false" />
+            <button id="applyPromoCode" class="text-button bordered" type="button" data-i18n="applyPromo">Apply</button>
+          </div>
+          <p id="promoMessage" class="promo-message hidden"></p>
+        </div>
+        <div class="onboarding-actions">
+          <button id="closeSubscriptionPrompt" class="analyze-button compact" type="button" data-i18n="ok">OK</button>
+        </div>
+      </section>
+    </div>
+
+    <div id="cryptoPaymentPrompt" class="onboarding hidden" role="dialog" aria-modal="true" aria-labelledby="cryptoPaymentTitle">
+      <section class="onboarding-card crypto-payment-card">
+        <button id="closeCryptoPaymentPrompt" class="modal-close" type="button" aria-label="Close">×</button>
+        <div id="cryptoPaymentFormState">
+          <span class="pro-eyebrow" data-i18n="cryptoPaymentEyebrow">Manual payment</span>
+          <h2 id="cryptoPaymentTitle" data-i18n="cryptoPaymentTitle">Request crypto payment</h2>
+          <p data-i18n="cryptoPaymentIntro">Stripe card payment is the fastest option. If it does not work, request manual crypto instructions.</p>
+          <div class="crypto-terms">
+            <strong data-i18n="cryptoPaymentTermsTitle">Before you request</strong>
+            <p data-i18n="cryptoPaymentTerms">Crypto payments are prepaid for 30 or 365 days, do not renew automatically, and are activated after payment is confirmed. No wallet address is shown here.</p>
+          </div>
+          <form id="cryptoPaymentForm" novalidate>
+            <label for="cryptoPaymentEmail" data-i18n="cryptoPaymentEmailLabel">Email</label>
+            <input id="cryptoPaymentEmail" type="email" autocomplete="email" spellcheck="false" placeholder="you@example.com" required />
+            <label for="cryptoPaymentPlan" data-i18n="cryptoPaymentPlanLabel">Plan</label>
+            <select id="cryptoPaymentPlan" required>
+              <option class="plan-variant-b-option" value="daily" data-i18n="cryptoDailyOption">24 hours — $1.99</option>
+              <option class="plan-variant-b-option" value="weekly" data-i18n="cryptoWeeklyOption">7 days — $5.99</option>
+              <option value="monthly" data-i18n="cryptoMonthlyOption">30 days — $9.99</option>
+              <option value="annual" data-i18n="cryptoAnnualOption">365 days — $59.99</option>
+            </select>
+            <label for="cryptoPaymentCountry" data-i18n="cryptoPaymentCountryLabel">Country</label>
+            <input id="cryptoPaymentCountry" type="text" autocomplete="country-name" minlength="2" maxlength="80" required />
+            <div class="crypto-honeypot" aria-hidden="true">
+              <label for="cryptoPaymentCompany">Company</label>
+              <input id="cryptoPaymentCompany" type="text" tabindex="-1" autocomplete="off" />
+            </div>
+            <p id="cryptoPaymentMessage" class="promo-message hidden"></p>
+            <button id="submitCryptoPaymentRequest" class="analyze-button compact" type="submit" data-i18n="cryptoPaymentSubmit">Send request</button>
+          </form>
+          <p class="crypto-support-copy">
+            <span data-i18n="cryptoSupportPrompt">Need a faster reply?</span>
+            <a id="cryptoSupportEmailLink" href="mailto:support@geoboost.win?subject=GeoBoost%20crypto%20payment" data-i18n="cryptoSupportEmail">Email support directly</a>
+          </p>
+        </div>
+        <div id="cryptoPaymentSuccessState" class="hidden">
+          <span class="success-mark" aria-hidden="true">✓</span>
+          <h2 data-i18n="cryptoPaymentSuccessTitle">Request received</h2>
+          <p data-i18n="cryptoPaymentSuccessBody">We will email payment instructions within 24 hours. Pro starts only after your payment is confirmed.</p>
+          <p class="crypto-request-id"><span data-i18n="cryptoPaymentRequestId">Request</span> <strong id="cryptoPaymentRequestId"></strong></p>
+          <p class="crypto-support-copy">
+            <span data-i18n="cryptoSupportPrompt">Need a faster reply?</span>
+            <a id="cryptoSuccessSupportEmailLink" href="mailto:support@geoboost.win?subject=GeoBoost%20crypto%20payment" data-i18n="cryptoSupportEmail">Email support directly</a>
+          </p>
+          <button id="closeCryptoPaymentSuccess" class="analyze-button compact" type="button" data-i18n="ok">OK</button>
+        </div>
+      </section>
+    </div>
+
+    <script src="i18n.js"></script>
+    <script src="i18n-affiliate.js"></script>
+    <script src="sidepanel.js"></script>
+  </body>
+</html>
